@@ -1,9 +1,15 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Backend\RoleController;
+use App\Http\Controllers\Backend\UserController;
+use App\Http\Controllers\Backend\AdminController;
+use App\Http\Controllers\Backend\PermissionController;
+use App\Http\Controllers\RevokePermissionFromRole;
+use App\Http\Controllers\RevokePermissionsFromRole;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,6 +31,7 @@ Route::get('/', function () {
     ]);
 });
 
+
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -34,5 +41,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::middleware(['auth', 'role:admin'])->prefix('dashboard')->group(function () {
+    Route::resource('/users', UserController::class);
+    Route::resource('/roles', RoleController::class);
+    Route::resource('/permissions', PermissionController::class);
+});
+
+
 
 require __DIR__.'/auth.php';
